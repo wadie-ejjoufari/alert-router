@@ -90,8 +90,6 @@ h1 {
   background: var(--canvas-subtle);
 }
 .lede { color: var(--fg-muted); margin: 0; }
-.header-action { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
-.hint { color: var(--fg-subtle); font-size: 0.75rem; margin: 0; text-align: right; max-width: 26ch; }
 
 .btn-primary {
   background: linear-gradient(180deg, #2da44e, #2a9147);
@@ -107,6 +105,70 @@ h1 {
 }
 .btn-primary:hover { background: #2c974b; }
 .btn-primary:active { background: #298e46; }
+
+.btn-secondary {
+  background: var(--canvas-default);
+  color: var(--fg-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 5px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-secondary:hover { background: var(--canvas-subtle); }
+
+/* Send-test form, styled like a Primer settings form: labeled fields, compact grid */
+.send-test { padding: 1.25rem 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+.send-test-header { margin-bottom: 0.9rem; }
+.send-test-header h2 { margin-bottom: 0.2rem; }
+.hint-inline { color: var(--fg-muted); font-size: 0.8125rem; margin: 0; }
+
+.flash-error {
+  background: var(--danger-subtle);
+  color: var(--danger-fg);
+  border: 1px solid var(--danger-fg);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.9rem;
+}
+
+.demo-controls { display: flex; align-items: flex-end; gap: 0.6rem; margin-bottom: 0.9rem; }
+
+.demo-fields {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem 0.75rem;
+  margin-bottom: 1rem;
+}
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+.field span { font-size: 0.75rem; color: var(--fg-muted); }
+.field input, .field select {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--fg-default);
+  background: var(--canvas-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+}
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent-emphasis);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.field-wide { grid-column: 1 / -1; }
+
+@media (max-width: 720px) {
+  .demo-fields { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .demo-fields { grid-template-columns: 1fr; }
+  .demo-controls { flex-direction: column; align-items: stretch; }
+}
 
 /* Stat tiles, styled like GitHub's Insights/Community summary boxes */
 .stats {
@@ -247,6 +309,4 @@ footer code {
 @media (max-width: 640px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   header.page-header .container { flex-direction: column; }
-  .header-action { align-items: flex-start; }
-  .hint { text-align: left; }
 }

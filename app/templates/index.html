@@ -16,16 +16,90 @@
           Slack, Jira, or dropped — instead of a human reading every single one.
         </p>
       </div>
-      <div class="header-action">
-        <form action="{{ url_for('views.demo_send') }}" method="post">
-          <button type="submit" class="btn-primary">Send test alert</button>
-        </form>
-        <p class="hint">No setup needed — this sends a real alert through the real pipeline below.</p>
-      </div>
     </div>
   </header>
 
   <div class="container">
+    <section class="send-test box">
+      <div class="send-test-header">
+        <h2>Send a test alert</h2>
+        <p class="hint-inline">Pick a scenario or randomize one, tweak anything, then send it through the real pipeline below.</p>
+      </div>
+
+      {% if error %}
+      <div class="flash-error">Couldn't send that alert: {{ error }}</div>
+      {% endif %}
+
+      <form action="{{ url_for('views.demo_send') }}" method="post" id="demo-form" data-had-error="{{ 'true' if error else 'false' }}">
+        <input type="hidden" name="mode" value="fields">
+
+        <div class="demo-controls">
+          <label class="field">
+            <span>Scenario</span>
+            <select id="scenario-select">
+              <option value="custom">Custom / blank</option>
+              {% for t in templates %}
+              <option value="{{ t.id }}">{{ t.label }}</option>
+              {% endfor %}
+              <option value="random">🎲 Random</option>
+            </select>
+          </label>
+          <button type="button" id="randomize-btn" class="btn-secondary">Randomize</button>
+        </div>
+
+        <div class="demo-fields">
+          <label class="field">
+            <span>Source</span>
+            <input type="text" name="source" id="f-source" value="{{ form_values.source or '' }}" required>
+          </label>
+          <label class="field">
+            <span>Alert type</span>
+            <input type="text" name="alert_type" id="f-alert_type" value="{{ form_values.alert_type or '' }}" required>
+          </label>
+          <label class="field">
+            <span>Severity</span>
+            <select name="severity" id="f-severity">
+              {% for s in ['low', 'medium', 'high', 'critical'] %}
+              <option value="{{ s }}" {{ 'selected' if form_values.severity == s else '' }}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Asset ID</span>
+            <input type="text" name="asset_id" id="f-asset_id" value="{{ form_values.asset_id or '' }}" required>
+          </label>
+          <label class="field">
+            <span>Asset criticality</span>
+            <select name="asset_criticality" id="f-asset_criticality">
+              {% for c in ['low', 'medium', 'high'] %}
+              <option value="{{ c }}" {{ 'selected' if form_values.asset_criticality == c else '' }}>{{ c }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Indicator type</span>
+            <select name="indicator_type" id="f-indicator_type">
+              <option value="">none</option>
+              <option value="ip" {{ 'selected' if form_values.indicator_type == 'ip' else '' }}>ip</option>
+              <option value="hash" {{ 'selected' if form_values.indicator_type == 'hash' else '' }}>hash</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Indicator value</span>
+            <input type="text" name="indicator_value" id="f-indicator_value" value="{{ form_values.indicator_value or '' }}">
+          </label>
+          <label class="field field-wide">
+            <span>Message</span>
+            <input type="text" name="message" id="f-message" value="{{ form_values.message or '' }}">
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary">Send test alert</button>
+      </form>
+    </section>
+
+    <script type="application/json" id="demo-data">{{ {"templates": templates, "random_pool": random_pool} | tojson }}</script>
+
     <section class="stats">
       <div class="stat"><span class="stat-value">{{ stats.total }}</span><span class="stat-label">received</span></div>
       <div class="stat"><span class="stat-value">{{ stats.routed }}</span><span class="stat-label">routed</span></div>
@@ -37,7 +111,7 @@
       <h2>Recent alerts</h2>
       <div class="box">
       {% if not alerts %}
-        <p class="empty">Nothing yet — click "Send test alert" above.</p>
+        <p class="empty">Nothing yet — send a test alert above.</p>
       {% else %}
       <table>
         <thead>
