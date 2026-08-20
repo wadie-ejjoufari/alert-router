@@ -42,6 +42,7 @@
       <table>
         <thead>
           <tr>
+            <th class="chevron-col"></th>
             <th>Time (UTC)</th>
             <th>Severity</th>
             <th>Type</th>
@@ -53,7 +54,10 @@
         </thead>
         <tbody>
           {% for a in alerts %}
-          <tr class="row-{{ a.status }}">
+          <tr class="row-{{ a.status }} alert-row" tabindex="0" role="button"
+              aria-expanded="false" aria-controls="detail-{{ loop.index }}"
+              data-target="detail-{{ loop.index }}">
+            <td class="chevron-cell"><span class="chevron">&#9656;</span></td>
             <td class="mono">{{ a.received_at.split('T')[1].split('.')[0] if 'T' in a.received_at else a.received_at }}</td>
             <td><span class="badge sev-{{ a.severity }}">{{ a.severity }}</span></td>
             <td>{{ a.alert_type }}</td>
@@ -68,6 +72,41 @@
             </td>
             <td><span class="badge status-{{ a.status }}">{{ a.status }}</span></td>
             <td class="small">{{ a.routing_detail or '' }}</td>
+          </tr>
+          <tr class="detail-row" id="detail-{{ loop.index }}" hidden>
+            <td colspan="8">
+              <div class="detail-panel">
+                <div class="detail-col">
+                  <h3>Raw payload</h3>
+                  <pre class="code-block"><code>{{ a.raw_pretty }}</code></pre>
+                </div>
+                <div class="detail-col">
+                  <h3>Enrichment</h3>
+                  {% if a.enrichment %}
+                  <dl class="kv">
+                    <dt>Provider</dt><dd class="mono">{{ a.enrichment.provider }}</dd>
+                    <dt>Indicator</dt><dd class="mono">{{ a.enrichment.indicator_type }}: {{ a.enrichment.indicator_value }}</dd>
+                    <dt>Reputation score</dt><dd>{{ a.enrichment.reputation_score }}/100</dd>
+                    <dt>Malicious</dt><dd>{{ "yes" if a.enrichment.malicious else "no" }}</dd>
+                  </dl>
+                  <p class="field-label">Detail</p>
+                  <p class="field-text">{{ a.enrichment.detail }}</p>
+                  {% else %}
+                  <p class="empty-inline">No enrichment — alert had no indicator to look up.</p>
+                  {% endif %}
+
+                  <h3>Outcome</h3>
+                  <dl class="kv">
+                    <dt>Status</dt><dd><span class="badge status-{{ a.status }}">{{ a.status }}</span></dd>
+                    {% if a.routing_decision %}<dt>Destination</dt><dd>{{ a.routing_decision }}</dd>{% endif %}
+                    {% if a.dedup_of %}<dt>Duplicate of</dt><dd class="mono">{{ a.dedup_of }}</dd>{% endif %}
+                    <dt>Alert ID</dt><dd class="mono">{{ a.id }}</dd>
+                  </dl>
+                  <p class="field-label">Why</p>
+                  <p class="field-text">{{ a.routing_detail or "—" }}</p>
+                </div>
+              </div>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -85,5 +124,6 @@
       </p>
     </footer>
   </div>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>

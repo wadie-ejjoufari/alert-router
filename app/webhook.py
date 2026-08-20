@@ -79,18 +79,20 @@ def process_alert(payload: dict, raw_body: str = "") -> dict:
 
     if decision.destination == "slack":
         summary = f"[{severity.upper()}] {alert_type} on {asset_id} — {message or 'no details provided'}"
-        detail = routing.send_to_slack(config["SLACK_WEBHOOK_URL"], summary)
+        delivery = routing.send_to_slack(config["SLACK_WEBHOOK_URL"], summary)
+        detail = f"{decision.reason}. {delivery}"
     elif decision.destination == "jira":
         summary = f"[{severity.upper()}] {alert_type} on {asset_id}"
         description = (
             f"{message}\n\nSource: {source}\nAsset criticality: {asset_criticality}\n"
             f"Enrichment: {enrichment_result.detail}"
         )
-        detail = routing.create_jira_ticket(
+        delivery = routing.create_jira_ticket(
             config["JIRA_BASE_URL"], config["JIRA_EMAIL"],
             config["JIRA_API_TOKEN"], config["JIRA_PROJECT_KEY"],
             summary, description,
         )
+        detail = f"{decision.reason}. {delivery}"
     else:
         detail = decision.reason
 

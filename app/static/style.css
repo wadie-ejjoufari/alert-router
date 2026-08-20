@@ -160,6 +160,60 @@ td { font-size: 0.8125rem; }
 .crit { color: var(--fg-subtle); }
 .row-dropped td { color: var(--fg-muted); }
 
+.alert-row { cursor: pointer; }
+.alert-row:focus-visible { outline: 2px solid var(--accent-emphasis); outline-offset: -2px; }
+.chevron-col { width: 1.75rem; padding: 0; }
+.chevron-cell { width: 1.75rem; padding-right: 0; }
+.chevron { display: inline-block; color: var(--fg-muted); font-size: 0.7rem; }
+
+.detail-row td { padding: 0; border-bottom: 1px solid var(--border-muted); }
+.detail-panel {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1.25rem;
+  background: var(--canvas-subtle);
+  padding: 1rem 1.25rem;
+}
+.detail-col h3 {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+  margin: 0.9rem 0 0.4rem;
+}
+.detail-col h3:first-child { margin-top: 0; }
+.code-block {
+  background: var(--canvas-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  margin: 0;
+  overflow-x: auto;
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--fg-default);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.empty-inline { color: var(--fg-muted); font-size: 0.8125rem; margin: 0; }
+
+.kv { display: grid; grid-template-columns: 9rem 1fr; gap: 0.35rem 0.75rem; margin: 0; }
+.kv dt { color: var(--fg-muted); font-size: 0.75rem; }
+.kv dd { margin: 0; font-size: 0.8125rem; word-break: break-word; }
+
+.field-label {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+  margin: 0.6rem 0 0.15rem;
+}
+.field-text { margin: 0; font-size: 0.8125rem; line-height: 1.45; }
+
+@media (max-width: 720px) {
+  .detail-panel { grid-template-columns: 1fr; }
+}
+
 /* Labels, matching Primer's pill-shaped Label component */
 .badge {
   display: inline-block;

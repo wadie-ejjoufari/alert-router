@@ -24,7 +24,11 @@ def index():
     alerts = []
     for row in rows:
         enrichment = json.loads(row["enrichment_json"]) if row["enrichment_json"] else None
-        alerts.append({**dict(row), "enrichment": enrichment})
+        try:
+            raw_pretty = json.dumps(json.loads(row["raw_payload"]), indent=2)
+        except (TypeError, ValueError):
+            raw_pretty = row["raw_payload"]
+        alerts.append({**dict(row), "enrichment": enrichment, "raw_pretty": raw_pretty})
 
     total = db.execute("SELECT COUNT(*) AS c FROM alerts").fetchone()["c"]
     routed = db.execute("SELECT COUNT(*) AS c FROM alerts WHERE status='routed'").fetchone()["c"]
