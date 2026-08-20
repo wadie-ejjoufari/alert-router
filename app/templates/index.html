@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alert Router — SOAR-lite demo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Alert Router <span class="subtitle">(SOAR-lite demo)</span></h1>
+    <p class="lede">
+      Security alerts come in as raw JSON, get enriched and deduplicated, and are routed to
+      Slack, Jira, or dropped — instead of a human reading every single one.
+    </p>
+    <form action="{{ url_for('views.demo_send') }}" method="post">
+      <button type="submit" class="btn-primary">Send test alert</button>
+    </form>
+    <p class="hint">No setup needed — this sends a real alert through the real pipeline below.</p>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><span class="stat-value">{{ stats.total }}</span><span class="stat-label">received</span></div>
+    <div class="stat"><span class="stat-value">{{ stats.routed }}</span><span class="stat-label">routed</span></div>
+    <div class="stat"><span class="stat-value">{{ stats.dropped }}</span><span class="stat-label">dropped (noise)</span></div>
+    <div class="stat"><span class="stat-value">{{ stats.deduped }}</span><span class="stat-label">deduped</span></div>
+  </section>
+
+  <section class="alerts">
+    <h2>Recent alerts</h2>
+    {% if not alerts %}
+      <p class="empty">Nothing yet — click "Send test alert" above.</p>
+    {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th>Time (UTC)</th>
+          <th>Severity</th>
+          <th>Type</th>
+          <th>Asset</th>
+          <th>Enrichment</th>
+          <th>Outcome</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in alerts %}
+        <tr class="row-{{ a.status }}">
+          <td class="mono">{{ a.received_at.split('T')[1].split('.')[0] if 'T' in a.received_at else a.received_at }}</td>
+          <td><span class="badge sev-{{ a.severity }}">{{ a.severity }}</span></td>
+          <td>{{ a.alert_type }}</td>
+          <td class="mono">{{ a.asset_id }} <span class="crit">({{ a.asset_criticality }})</span></td>
+          <td class="mono small">
+            {% if a.enrichment %}
+              {{ a.enrichment.reputation_score }}/100
+              {% if a.enrichment.malicious %}<span class="badge malicious">malicious</span>{% endif %}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td><span class="badge status-{{ a.status }}">{{ a.status }}</span></td>
+          <td class="small">{{ a.routing_detail or '' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  <footer>
+    <p>
+      Webhook: <code>POST /webhook/alert</code> with header <code>X-Webhook-Secret</code>.
+      Enrichment uses a deterministic mock provider unless <code>ABUSEIPDB_API_KEY</code> is set.
+      Slack/Jira destinations log locally unless <code>SLACK_WEBHOOK_URL</code> /
+      <code>JIRA_*</code> env vars are configured.
+    </p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,19 @@
+services:
+  alert-router:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - WEBHOOK_SHARED_SECRET=${WEBHOOK_SHARED_SECRET:-changeme-dev-secret}
+      - DEDUP_WINDOW_MINUTES=${DEDUP_WINDOW_MINUTES:-15}
+      - ABUSEIPDB_API_KEY=${ABUSEIPDB_API_KEY:-}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+      - JIRA_BASE_URL=${JIRA_BASE_URL:-}
+      - JIRA_EMAIL=${JIRA_EMAIL:-}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN:-}
+      - JIRA_PROJECT_KEY=${JIRA_PROJECT_KEY:-}
+    volumes:
+      - alert-router-data:/app/data
+
+volumes:
+  alert-router-data:
