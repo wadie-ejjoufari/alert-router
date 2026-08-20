@@ -6,6 +6,7 @@ import os
 from flask import Flask
 
 from . import db as db_module
+from . import ratelimit
 
 
 def create_app(config_overrides: dict | None = None) -> Flask:
@@ -29,6 +30,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         app.config.update(config_overrides)
 
     db_module.init_app(app)
+    ratelimit.init_app(app)
 
     from .webhook import bp as webhook_bp
     from .views import bp as views_bp

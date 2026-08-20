@@ -8,6 +8,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 from . import dedup, enrichment, routing
 from .db import get_db
+from .ratelimit import rate_limit
 
 bp = Blueprint("webhook", __name__)
 
@@ -125,6 +126,7 @@ def process_alert(payload: dict, raw_body: str = "") -> dict:
 
 
 @bp.route("/webhook/alert", methods=["POST"])
+@rate_limit(max_requests=30, window_seconds=60)
 def receive_alert():
     provided_secret = request.headers.get("X-Webhook-Secret", "")
     if provided_secret != current_app.config["WEBHOOK_SHARED_SECRET"]:

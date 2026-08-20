@@ -1,12 +1,18 @@
 # Alert Router — SOAR-lite
 
+[![Tests](https://github.com/wadie-ejjoufari/alert-router/actions/workflows/tests.yml/badge.svg)](https://github.com/wadie-ejjoufari/alert-router/actions/workflows/tests.yml)
+
 A small, self-contained alerting pipeline: security alerts come in as raw JSON, get
 enriched with threat-intel context and deduplicated, and are automatically routed to
 Slack, a Jira ticket, or dropped as noise — instead of a human reading every single one.
 
-**Try it live in 10 seconds, no setup:** click "Send test alert" on the running demo.
-Each click fires a realistic alert through the real pipeline below and you watch it get
-enriched, scored, and routed (or dropped) in real time.
+**Try it live in 10 seconds, no setup:** pick a scenario (or hit Randomize) and click
+"Send test alert" on the running demo. Each click fires a realistic alert through the
+real pipeline below and you watch it get enriched, scored, and routed (or dropped) in
+real time — then click any row to see the raw payload and the full reasoning behind
+the decision.
+
+![Alert Router dashboard — send-test form, live stats, and an expanded alert row showing the raw payload, enrichment, and routing rationale](docs/screenshot.png)
 
 ---
 
@@ -59,7 +65,8 @@ pip install -r requirements.txt
 python wsgi.py               # or: docker compose up --build
 ```
 
-Visit `http://localhost:8000` and click **Send test alert**.
+Visit `http://localhost:8000`, pick a scenario from the dropdown (or hit **Randomize**),
+tweak any field, and click **Send test alert**.
 
 ## Sending a real alert
 
@@ -78,6 +85,10 @@ curl -X POST http://localhost:8000/webhook/alert \
     "message": "known ransomware signature quarantined"
   }'
 ```
+
+The webhook (and the demo-send form) are rate-limited per IP — 30 and 20 requests per
+minute respectively — returning `429` past that. See [Scope, deliberately
+cut](#scope-deliberately-cut).
 
 ## Configuration
 
@@ -112,6 +123,10 @@ This is deliberately simple — the point being demonstrated is the *pipeline*
 - No auth beyond the shared-secret header — no user accounts, no multi-tenancy.
 - Two delivery destinations (Slack, Jira), not a general integration platform.
 - One SQLite file, not built for high alert volume.
+- Rate limiting is a simple in-memory per-IP sliding window (`app/ratelimit.py`) —
+  enough to blunt casual scripted abuse of the public webhook and demo-send endpoints,
+  not a substitute for a real gateway (Redis, Cloudflare, an API gateway) under
+  production traffic.
 
 These are the right cuts for a demonstration of the pattern; a production version would
 add per-client rule config, more destinations, and a proper queue in front of delivery.
@@ -132,5 +147,7 @@ file.
 python -m unittest discover -s tests -v
 ```
 
-Covers dedup hashing, routing thresholds, the enrichment mock/fallback behavior, and the
-full webhook flow (auth, validation, dedup, and the demo button) end to end.
+Covers dedup hashing, routing thresholds, the enrichment mock/fallback behavior, the
+full webhook flow (auth, validation, dedup, and the demo button) end to end, and the
+per-IP rate limiter. Runs automatically on every push via [GitHub
+Actions](.github/workflows/tests.yml).

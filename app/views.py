@@ -6,6 +6,7 @@ from flask import Blueprint, current_app, redirect, render_template, request, ur
 
 from .db import get_db
 from .demo_payloads import RANDOM_POOL, TEMPLATES, next_payload
+from .ratelimit import rate_limit
 from .webhook import ValidationError, process_alert
 
 bp = Blueprint("views", __name__)
@@ -51,6 +52,7 @@ def index():
 
 
 @bp.route("/demo/send", methods=["POST"])
+@rate_limit(max_requests=20, window_seconds=60)
 def demo_send():
     """Runs an alert through the exact same pipeline a real EDR webhook call would use —
     in-process, not a real HTTP round trip, so the demo form works identically under
