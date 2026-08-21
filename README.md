@@ -131,6 +131,18 @@ This is deliberately simple — the point being demonstrated is the *pipeline*
 These are the right cuts for a demonstration of the pattern; a production version would
 add per-client rule config, more destinations, and a proper queue in front of delivery.
 
+## Deploying
+
+Deployed on [Render](https://render.com)'s free tier via the included
+[`render.yaml`](render.yaml) blueprint: in the Render dashboard, **New → Blueprint**,
+connect this repo, and it picks up the Dockerfile, health check, and env vars
+automatically — `WEBHOOK_SHARED_SECRET` is generated for you rather than left at the
+`changeme-dev-secret` default.
+
+The free tier has no persistent disk, so the SQLite file is ephemeral — demo data
+resets on restart or redeploy. That's a fine trade for a free, always-reachable demo;
+a production deployment would move to a managed Postgres instance instead.
+
 ## Tests
 
 ```bash
