@@ -131,16 +131,6 @@ This is deliberately simple — the point being demonstrated is the *pipeline*
 These are the right cuts for a demonstration of the pattern; a production version would
 add per-client rule config, more destinations, and a proper queue in front of delivery.
 
-## Deploying
-
-**Render:** connect the repo, set the build command to `pip install -r requirements.txt`
-and the start command to `gunicorn wsgi:app`, add a persistent disk mounted wherever
-`DATABASE_PATH` points, and set env vars from the table above.
-
-**Fly.io:** `fly launch` from this directory (it will pick up `fly.toml`), then
-`fly deploy`. The `fly.toml` already provisions a small persistent volume for the SQLite
-file.
-
 ## Tests
 
 ```bash
