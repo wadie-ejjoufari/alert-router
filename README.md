@@ -6,11 +6,11 @@ A small, self-contained alerting pipeline: security alerts come in as raw JSON, 
 enriched with threat-intel context and deduplicated, and are automatically routed to
 Slack, a Jira ticket, or dropped as noise — instead of a human reading every single one.
 
-**Try it live in 10 seconds, no setup:** pick a scenario (or hit Randomize) and click
-"Send test alert" on the running demo. Each click fires a realistic alert through the
-real pipeline below and you watch it get enriched, scored, and routed (or dropped) in
-real time — then click any row to see the raw payload and the full reasoning behind
-the decision.
+**Try it in 10 seconds, no config needed:** run it locally (see Quick start below), pick
+a scenario (or hit Randomize), and click "Send test alert." Each click fires a realistic
+alert through the real pipeline and you watch it get enriched, scored, and routed (or
+dropped) in real time — then click any row to see the raw payload and the full reasoning
+behind the decision.
 
 ![Alert Router dashboard — send-test form, live stats, and an expanded alert row showing the raw payload, enrichment, and routing rationale](docs/screenshot.png)
 
@@ -133,15 +133,17 @@ add per-client rule config, more destinations, and a proper queue in front of de
 
 ## Deploying
 
-Deployed on [Render](https://render.com)'s free tier via the included
-[`render.yaml`](render.yaml) blueprint: in the Render dashboard, **New → Blueprint**,
+Not currently hosted anywhere — this runs locally (see Quick start) or via
+`docker compose up --build`. A [`render.yaml`](render.yaml) blueprint is included for
+deploying to [Render](https://render.com): in the Render dashboard, **New → Blueprint**,
 connect this repo, and it picks up the Dockerfile, health check, and env vars
 automatically — `WEBHOOK_SHARED_SECRET` is generated for you rather than left at the
-`changeme-dev-secret` default.
+`changeme-dev-secret` default. (Render's free web-service tier may require a payment
+method on file depending on current policy — check before committing to it.)
 
-The free tier has no persistent disk, so the SQLite file is ephemeral — demo data
-resets on restart or redeploy. That's a fine trade for a free, always-reachable demo;
-a production deployment would move to a managed Postgres instance instead.
+Render's free tier has no persistent disk, so the SQLite file would be ephemeral —
+demo data resets on restart or redeploy. A production deployment would move to a
+managed Postgres instance instead.
 
 ## Tests
 
